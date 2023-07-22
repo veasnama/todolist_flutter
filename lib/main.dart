@@ -35,6 +35,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final PageController _controller = PageController(initialPage: 0);
   final ScrollController _scroller = ScrollController();
+  int _currentIndex = 0;
   @override
   void dispose() {
     _scroller.dispose();
@@ -50,14 +51,39 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: [IconButton(onPressed: () {}, icon: const Icon(Icons.search))],
         backgroundColor: const Color.fromRGBO(249, 190, 124, 1),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   shape: const CircleBorder(),
-      //   tooltip: 'Click button to add card',
-      //   child: const Icon(Icons.add),
-      // ),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text(
+                    'Warning',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  content: const Text('You have been hacked.'),
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.check),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+        },
+        shape: const CircleBorder(),
+        tooltip: 'Click button to add card',
+        backgroundColor: Colors.purple,
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
@@ -65,18 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Color.fromRGBO(202, 205, 219, 1),
         ),
         onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
           _controller.animateToPage(index,
               duration: const Duration(milliseconds: 300),
               curve: Curves.bounceInOut);
         },
         items: const [
           BottomNavigationBarItem(
-              activeIcon: Icon(Icons.home_filled),
-              tooltip: 'Home',
-              icon: Icon(Icons.home),
-              label: 'Home'),
+              tooltip: 'Home', icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              activeIcon: Icon(Icons.search_off),
+              activeIcon: Icon(Icons.search_rounded),
               tooltip: 'Search',
               icon: Icon(Icons.search),
               label: 'Search'),
@@ -103,7 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
       body: PageView(
         scrollDirection: Axis.horizontal,
         controller: _controller,
-        onPageChanged: (value) => {print(value)},
         children: [
           HomeScreen(controller: _controller),
           Container(
